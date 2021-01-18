@@ -12,33 +12,18 @@ class PDFViewerViewController: UIViewController {
     
     @IBOutlet weak var spinner: UIActivityIndicatorView!
     var pdfURL : String?
-    
+    var model : PDFViewerViewModel!
     // could have made viewmodel for this class if I had more time
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "PDF Viewer"
-       
-        validatePdfURL(pdfURL)
-    }
-    
-    func setSpinnerToShowing(_ to: Bool){
-        spinner.isHidden = !to
-        if to{
-            spinner.startAnimating()
-        }else{
-            spinner.stopAnimating()
+        self.model = PDFViewerViewModel()
+        model.validatePdfURL(pdfURL, self) { [weak self] (validURL) in
+            if !validURL{
+                self?.urlInvalidError()
+            }
         }
-    }
-    
-    func validatePdfURL(_ urlStr : String?){
-        
-        if let url = pdfURL{
-            loadPDF(url)
-        }else{
-            urlInvalidError()
-        }
-        
     }
     
     func setupPDFView(_ url: URL){
@@ -54,15 +39,6 @@ class PDFViewerViewController: UIViewController {
         if let document = PDFDocument(url: url) {
             pdfView.document = document
         }
-    }
-    
-    func loadPDF(_ urlStr: String){
-        guard let url = URL(string: urlStr) else { return }
-                
-        let urlSession = URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue())
-                
-        let downloadTask = urlSession.downloadTask(with: url)
-        downloadTask.resume()
     }
     
     func urlInvalidError(){

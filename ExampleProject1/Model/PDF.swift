@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class PDF: Decodable{
+final class PDF: Decodable {
     
     var description: String?
     var filename: String?
